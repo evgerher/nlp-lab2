@@ -16,7 +16,7 @@ torch.random.manual_seed(34)
 
 class Seq2Seq(nn.Module):
   @classmethod
-  def build(cls, experiment: ExperimentSetup) -> Tuple['Seq2Seq', VOCAB, VOCAB]:
+  def build(cls, experiment: ExperimentSetup, name: str) -> Tuple['Seq2Seq', VOCAB, VOCAB]:
     enc_emb_setup = experiment.encoder_embedding
     enc_vocabulary, enc_embedder = resolve_embedding(enc_emb_setup)
     if enc_vocabulary is None:
@@ -39,14 +39,15 @@ class Seq2Seq(nn.Module):
     decoder = Decoder.resolve_architecture(decoder_architecture, dec_embedder, attention, out_classes=len(dec_vocabulary))
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    return Seq2Seq(encoder, decoder, device), enc_vocabulary, dec_vocabulary
+    return Seq2Seq(encoder, decoder, device, name), enc_vocabulary, dec_vocabulary
 
 
-  def __init__(self, encoder: Encoder, decoder: Decoder, device):
+  def __init__(self, encoder: Encoder, decoder: Decoder, device, name):
     super(Seq2Seq, self).__init__()
     self.encoder = encoder
     self.decoder = decoder
     self.device = device
+    self.name = name
 
     assert encoder.hid_dim == decoder.hid_dim, \
       "Hidden dimensions of encoder and decoder must be equal!"

@@ -236,6 +236,13 @@ def train_model(seq2seq: Seq2Seq,
   return seq2seq
 
 
+def save_model(seq2seq, fname, loss):
+  state = {
+    'state_dict': seq2seq.state_dict(),
+    'val_loss': loss
+  }
+  torch.save(state, fname)
+
 
 def train_pipeline(seq2seq: Seq2Seq,
                    optimizer,
@@ -272,10 +279,13 @@ def train_pipeline(seq2seq: Seq2Seq,
         logger.info('Epoch [%d], val loss: %.4f', epoch, eval_loss)
         if writer is not None:
           writer.add_scalar('Val loss', eval_loss, epoch)
+        save_model(seq2seq, f'epoch_{epoch}_{seq2seq.name}.pt', eval_loss)
+
         if eval_loss < best_val_loss:
           logger.info('New best val loss: %.4f', epoch, eval_loss)
           best_val_loss = eval_loss
-          seq2seq.save('best-model') # todo: me!!!!!
+
+          save_model(seq2seq, f'best_model_{seq2seq.name}.pt', best_val_loss)
   return seq2seq
 
 

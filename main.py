@@ -33,7 +33,7 @@ def train_callback(args):
   time_str = time_specific.strftime('%H_%M_%S')
   writer = SummaryWriter(f'experiment_{experiment_name}_{time_str}')
 
-  seq2seq, en_vocab, ru_vocab = Seq2Seq.build(experiment_setup)
+  seq2seq, en_vocab, ru_vocab = Seq2Seq.build(experiment_setup, experiment_name)
   seq2seq = seq2seq.to(seq2seq.device)
   seq2seq = train_model(seq2seq, train_setup, experiment_setup, en_vocab, ru_vocab, writer)
   logger.info('Finished TRAIN callback')
