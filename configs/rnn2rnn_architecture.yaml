@@ -1,0 +1,36 @@
+encoder_embedding:
+  name: "glove"
+  language: "en"
+  embedding_size: 300
+  vocabulary_size: 400000
+  token_type: "word"
+  max_length: 128
+decoder_embedding:
+  language: "ru"
+  embedding_size: 250
+  vocabulary_size: 200000
+  vocabulary_file: "ru_words.txt"
+  token_type: "word"
+  max_length: 128
+encoder:
+  layers: 2
+  layer_dropout: 0.4
+  dropout: 0.3
+  cell: "GRU"
+  hidden_size: 256
+  bidirectional: true
+decoder:
+  layers: 2
+  layer_dropout: 0.4
+  dropout: 0.4
+  cell: "GRU"
+  hidden_size: 256
+  bidirectional: false
+attention:
+  name: "tutorial"
+
+#attention: AttentionSetup
+#encoder_embedding: EmbeddingSetup
+#decoder_embedding: EmbeddingSetup
+#encoder: MODEL_ARCHITECTURE # transformers ignore pretrained embeddings
+#decoder: MODEL_ARCHITECTURE # transformers ignore pretrained embeddings

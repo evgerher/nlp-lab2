@@ -1,0 +1,15 @@
+seaborn
+matplotlib
+pandas
+torchtext==0.9.0
+torch==1.8.0
+scikit-learn
+tensorboard==2.5.0
+jupyter
+datasets  # https://github.com/huggingface/datasets
+transformers
+tokenizers
+marshmallow-dataclass==8.4.1
+marshmallow_enum==1.5.1
+typeguard==2.12.0
+PyYAML==5.4.1

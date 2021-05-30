@@ -1,0 +1,8 @@
+opus100-*/
+experiment_*/
+*.zip
+*.pt
+*.log
+data.txt
+.DS_Store
+.idea

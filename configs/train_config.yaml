@@ -1,0 +1,16 @@
+optimizer:
+  name: "adam"
+  kwargs:
+    lr: 0.001
+    amsgrad: true
+    weight_decay: 0.0001
+scheduler:
+  name: "plateau"
+  kwargs:
+    mode: "min"
+    factor: 0.1
+    patience: 10
+
+
+epochs: 300
+batch_size: 8
