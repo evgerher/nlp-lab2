@@ -155,25 +155,32 @@ def prepare_dataset(en_vocab: VOCAB,
     dataset.save_to_disk(ds_name)
   if dataset_present:
     dataset = datasets.load_from_disk(ds_name)
+
   return dataset, en_tokenizer, ru_tokenizer
   # todo: think about collate with length ?
 
 
-def prepare_dataloaders(dataset, tokenizer_en, tokenizer_ru, batch_size: int):
-  def collate_fn(examples):
+class Collator:
+  def __init__(self, tokenizer_ru, tokenizer_en):
+    self.tokenizer_ru = tokenizer_ru
+    self.tokenizer_en = tokenizer_en
+
+  def collate_fn(self, examples):
     en_tokens = []
     ru_tokens = []
     for example in examples:
       en_tokens.append(example['en_tokens'])
       ru_tokens.append(example['ru_tokens'])
 
-    en_pads = tokenizer_en.pad(en_tokens, return_tensors='pt')
-    ru_pads = tokenizer_ru.pad(ru_tokens, return_tensors='pt')
+    en_pads = self.tokenizer_en.pad(en_tokens, return_tensors='pt')
+    ru_pads = self.tokenizer_ru.pad(ru_tokens, return_tensors='pt')
 
     return (en_pads, ru_pads)
 
-  train_dataloader = torch.utils.data.DataLoader(dataset['train'], collate_fn=collate_fn, batch_size=batch_size, num_workers=4)
-  val_dataloader = torch.utils.data.DataLoader(dataset['validation'], collate_fn=collate_fn, batch_size=batch_size, num_workers=4)
+def prepare_dataloaders(dataset, tokenizer_en, tokenizer_ru, batch_size: int, num_workers: int):
+  collator = Collator(tokenizer_ru, tokenizer_en)
+  train_dataloader = torch.utils.data.DataLoader(dataset['train'], collate_fn=collator.collate_fn, batch_size=batch_size, num_workers=num_workers)
+  val_dataloader = torch.utils.data.DataLoader(dataset['validation'], collate_fn=collator.collate_fn, batch_size=batch_size, num_workers=num_workers)
   # next(iter(train_dataloader))
   # next(iter(val_dataloader))
   return train_dataloader, val_dataloader
@@ -191,7 +198,10 @@ def train_model(seq2seq: Seq2Seq,
                                                         ru_vocab,
                                                         experiment_setup.encoder_embedding,
                                                         experiment_setup.decoder_embedding)
-  train_dataloader, val_dataloader = prepare_dataloaders(dataset, en_tokenizer, ru_tokenizer, train_setup.batch_size)
+  train_dataloader, val_dataloader = prepare_dataloaders(dataset, en_tokenizer,
+                                                         ru_tokenizer,
+                                                         train_setup.batch_size,
+                                                         train_setup.num_workers)
   logger.info('Initialized datasets and dataloaders')
 
   start_time = datetime.now()

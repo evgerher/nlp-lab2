@@ -9,6 +9,7 @@ jupyter
 datasets  # https://github.com/huggingface/datasets
 transformers
 tokenizers
+spacy == 3.0.6
 marshmallow-dataclass==8.4.1
 marshmallow_enum==1.5.1
 typeguard==2.12.0

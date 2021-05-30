@@ -5,6 +5,8 @@ An architecture of seq2seq model is configurable.
 
 ## Pre-run requirements
 
+`pip install -r requirements.txt`
+
 Please, install next spacy dependencies, if you plan to use word-tokenizers
 - `python -m spacy download en_core_web_sm`
 - `python -m spacy download ru_core_news_sm`

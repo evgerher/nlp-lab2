@@ -27,6 +27,7 @@ class TrainSetup:
   scheduler: Optional[SchedulerSetup]
   epochs: int
   batch_size: int
+  num_workers: int
 
   @classmethod
   def load_yaml(cls, path: str) -> 'TrainSetup':
