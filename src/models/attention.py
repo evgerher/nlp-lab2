@@ -49,8 +49,8 @@ class TutorialAttention(Attention):
   def forward(self, decoder_embeds, decoder_past_hidden, encoder_states):
     seq_len = encoder_states.shape[0]
     embed_hidden = torch.cat((decoder_embeds[0], decoder_past_hidden[0]), 1)
-    attn_weights = self.attn(embed_hidden)
-    attn_weights = F.softmax(attn_weights, dim=1)[:, :seq_len] # take only `seq_len` first items
+    attn_weights = self.attn(embed_hidden)[:, :seq_len]
+    attn_weights = F.softmax(attn_weights, dim=1) # take only `seq_len` first items
     attn_applied = torch.bmm(attn_weights.unsqueeze(1),
                              encoder_states.permute(1, 0, 2)).squeeze(1)
 

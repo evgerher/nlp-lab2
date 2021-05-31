@@ -6,3 +6,4 @@ experiment_*/
 data.txt
 .DS_Store
 .idea
+*.pyc

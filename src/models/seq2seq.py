@@ -68,18 +68,18 @@ class Seq2Seq(nn.Module):
     trg_vocab_size = self.decoder.embedding.num_embeddings # todo: what ?
 
     # tensor to store decoder outputs
-    outputs = torch.zeros(max_len, batch_size, trg_vocab_size).to(self.device)
+    outputs = torch.zeros(max_len - 1, batch_size, trg_vocab_size).to(self.device)
 
     # last hidden state of the encoder is used as the initial hidden state of the decoder
     encoder_output_states, encoder_hidden = self.encoder(src, None) # encoder_hidden can be pair
 
-    # first input to the decoder is the <sos> tokens
+    # first input to the decoder is the <bos> tokens
     input = trg[0, :]
     decoder_hidden = encoder_hidden[:2]
     for t in range(1, max_len):
       # todo: i am not expecting softmax or log_softmax
       output, decoder_hidden = self.decoder(input, decoder_hidden, encoder_output_states)
-      outputs[t] = output
+      outputs[t - 1] = output
       teacher_force = random.random() < teacher_forcing_ratio
       top1 = output.max(1)[1]
       input = (trg[t] if teacher_force else top1)
@@ -110,9 +110,9 @@ class Seq2Seq(nn.Module):
     # todo: use scheduler
     batch_size = len(target_tensor)
     optim.zero_grad()
-    outputs = self.forward(input_tensor, target_tensor)
+    outputs = self(input_tensor, target_tensor)
     loss: torch.Tensor = 0.0
-    for idx, output in enumerate(outputs):
+    for idx, output in enumerate(outputs, 1): # first target token is BOS
       log_softmax = F.log_softmax(output, dim=1)
       loss += criterion(log_softmax, target_tensor[:, idx])
 
@@ -122,7 +122,7 @@ class Seq2Seq(nn.Module):
 
   def eval_batch(self, input_tensor, target_tensor, criterion):
     batch_size = len(target_tensor)
-    outputs = self.forward(input_tensor, target_tensor)
+    outputs = self(input_tensor, target_tensor)
     loss = 0.0
     for idx, output in enumerate(outputs):
       log_softmax = F.log_softmax(output)
