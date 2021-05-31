@@ -177,10 +177,10 @@ class Collator:
 
     return (en_pads, ru_pads)
 
-def prepare_dataloaders(dataset, tokenizer_en, tokenizer_ru, batch_size: int, num_workers: int):
+def prepare_dataloaders(dataset, tokenizer_en, tokenizer_ru, batch_size: int):
   collator = Collator(tokenizer_ru, tokenizer_en)
-  train_dataloader = torch.utils.data.DataLoader(dataset['train'], collate_fn=collator.collate_fn, batch_size=batch_size, num_workers=num_workers)
-  val_dataloader = torch.utils.data.DataLoader(dataset['validation'], collate_fn=collator.collate_fn, batch_size=batch_size, num_workers=num_workers)
+  train_dataloader = torch.utils.data.DataLoader(dataset['train'], collate_fn=collator.collate_fn, batch_size=batch_size)
+  val_dataloader = torch.utils.data.DataLoader(dataset['validation'], collate_fn=collator.collate_fn, batch_size=batch_size)
   # next(iter(train_dataloader))
   # next(iter(val_dataloader))
   return train_dataloader, val_dataloader
@@ -200,8 +200,7 @@ def train_model(seq2seq: Seq2Seq,
                                                         experiment_setup.decoder_embedding)
   train_dataloader, val_dataloader = prepare_dataloaders(dataset, en_tokenizer,
                                                          ru_tokenizer,
-                                                         train_setup.batch_size,
-                                                         train_setup.num_workers)
+                                                         train_setup.batch_size)
   logger.info('Initialized datasets and dataloaders')
 
   start_time = datetime.now()
